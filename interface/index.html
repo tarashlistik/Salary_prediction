@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Prediction</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+<body>
+    <h1>Salary Prediction</h1>
+    <form id="prediction-form">
+
+        <label for="experience">Experience (in years):</label>
+        <input type="number" id="experience" name="experience" required>
+
+        <label for="position">Profession:</label>
+        <select id="position" name="position" required>
+            <option value="Data Scientist">Data Scientist</option>
+            <option value="Data Engineer / Big Data Engineer">Data Engineer / Big Data Engineer</option>
+            <option value="Data Analyst">Data Analyst</option>
+            <option value="Computer Vision Engineer">Computer Vision Engineer</option>
+            <option value="Machine Learning Engineer">Machine Learning Engineer</option>
+        </select>
+
+        <button type="button" onclick="predictSalary()">Predict Salary</button>
+    </form>
+
+    <div id="prediction-result"></div>
+
+    <script>
+        function predictSalary() {
+            var experience = $("#experience").val();
+            var position = $("#position").val();
+
+            $.ajax({
+                type: "POST",
+                url: "/predict",
+                data: { experience: experience, position: position },
+                success: function(result) {
+                    // Determine the salary range based on experience
+                    var salaryRanges = {
+                        0: "up to a year",
+                        1: "1-3 years",
+                        2: "1-3 years",
+                        3: "1-3 years",
+                        4: "4-6 years",
+                        5: "4-6 years",
+                        6: "4-6 years",
+                        7: "7-9 years",
+                        8: "7-9 years",
+                        9: "7-9 years",
+                        10: "10-15 years",
+                        11: "10-15 years",
+                        12: "10-15 years",
+                        13: "10-15 years",
+                        14: "10-15 years",
+                        15: "10-15 years",
+                        // Add more ranges as needed
+                    };
+
+                    // Determine the salary range based on experience
+                    var salaryRange = "more 15"; // Default value
+                    for (var range in salaryRanges) {
+                        if (experience <= parseInt(range)) {
+                            salaryRange = salaryRanges[range];
+                            break;
+                        }
+                    }
+
+                    // Adjust the predicted salary by subtracting $500
+                    var lowerBound = Math.max(0, result.prediction - 500);
+                    var upperBound = result.prediction;
+
+                    // Display the salary prediction with a range
+                    $("#prediction-result").html("<p>Salary for " + salaryRange + " of experience.</p>"
+                                                + "<p>Prediction: " + lowerBound + " - " + upperBound + "</p>");
+                },
+                error: function() {
+                    $("#prediction-result").html("<p>Failed to retrieve prediction</p>");
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
